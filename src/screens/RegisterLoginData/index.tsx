@@ -39,12 +39,20 @@ export function RegisterLoginData() {
   } = useForm();
 
   async function handleRegister(formData: FormData) {
+    const passKey= '@passmanager:logins'
     const newLoginData = {
       id: String(uuid.v4()),
       ...formData
     }
 
-    // Save data on AsyncStorage
+    await schema.validate(newLoginData)
+
+    const response = await AsyncStorage.getItem(passKey)
+    const lista = response ? JSON.parse(response) : []
+
+    const newLista = [...lista, newLoginData]
+  
+    await AsyncStorage.setItem(passKey, JSON.stringify(newLista))
   }
 
   return (
@@ -57,12 +65,10 @@ export function RegisterLoginData() {
         <HeaderTitle>Salve o login de algum serviço!</HeaderTitle>
 
         <Form>
-          <Input
+        <Input
             title="Título"
             name="title"
-            error={
-              // message error here
-            }
+            error={ 'Título é obrigatório!' }            
             control={control}
             placeholder="Escreva o título aqui"
             autoCapitalize="sentences"
@@ -71,9 +77,7 @@ export function RegisterLoginData() {
           <Input
             title="Email"
             name="email"
-            error={
-              // message error here
-            }
+            error={ 'Email é obrigatório!' }
             control={control}
             placeholder="Escreva o Email aqui"
             autoCorrect={false}
@@ -83,9 +87,7 @@ export function RegisterLoginData() {
           <Input
             title="Senha"
             name="password"
-            error={
-              // message error here
-            }
+            error={ 'Senha é obrigatória!' }
             control={control}
             secureTextEntry
             placeholder="Escreva a senha aqui"
